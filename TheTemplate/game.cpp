@@ -3,7 +3,6 @@
 #include "template.h"
 #include <SDL.h>
 #include <cstdio> //printf
-
 #include <iostream>
 
 #define SNOWDENSITY 200
@@ -12,6 +11,7 @@ namespace Tmpl8
 	Snow snow;
 	Sprite playerSprite(new Surface("assets/ctankbase.tga"), 16);
 	Player player(&playerSprite);
+
 	// -----------------------------------------------------------
 	// Initialize the application
 	// -----------------------------------------------------------
@@ -19,6 +19,7 @@ namespace Tmpl8
 	{
 		snow.CreateSnowEffect();
 		snow.CreateGroundSnow();
+
 	}
 	
 	// -----------------------------------------------------------
@@ -26,7 +27,7 @@ namespace Tmpl8
 	// -----------------------------------------------------------
 	void Game::Shutdown()
 	{
-
+		
 	}
 
 	// -----------------------------------------------------------
