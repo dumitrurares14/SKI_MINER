@@ -4,6 +4,7 @@
 #include <SDL.h>
 #include <cstdio> //printf
 
+
 namespace Tmpl8 {
 
 class Surface;
@@ -25,12 +26,22 @@ private:
 	int mouseButton;
 };
 
+
+
+
 class Entity {
 public:
+
 	int x, y;
+
+
 	Entity() {
 		x = 0;
 		y = 0;
+	}
+
+	void RenderThis(Surface* screen,Sprite sprite,int x, int y) {
+		sprite.Draw(screen, x - 20, y - 20);
 	}
 };
 
@@ -103,6 +114,35 @@ public:
 	}
 
 	////////////////////////
+
+
 };
 
+
+class Player : public Entity {
+public:
+	Sprite* playerSprite = nullptr;
+
+	Player(Sprite* sprite) {
+		playerSprite = sprite;
+	}
+
+	void SkiMovement(Surface* screen,float dist, float speed, int objX,int objY) 
+	{
+
+		if (abs(x - objX) > dist || abs(y - objY > dist)) {
+			if (x - objX < 0) {
+				x += 1 * speed;
+			}
+			else if (x - objX> 0) {
+				x -= 1 * speed;
+			}
+		}
+		y += 1 * speed;
+
+		playerSprite->Draw(screen, (int)x - 20, (int)y - 20);
+	}
+	
+
+};
 }; // namespace Tmpl8

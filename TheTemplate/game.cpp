@@ -10,7 +10,8 @@
 namespace Tmpl8
 {
 	Snow snow;
-
+	Sprite playerSprite(new Surface("assets/ctankbase.tga"), 16);
+	Player player(&playerSprite);
 	// -----------------------------------------------------------
 	// Initialize the application
 	// -----------------------------------------------------------
@@ -32,12 +33,14 @@ namespace Tmpl8
 	// Main application tick function
 	// -----------------------------------------------------------
 
-	
+
 	void Game::Tick(float deltaTime)
 	{
-		screen->Clear(0);
-		snow.UpdateGroundSnow(mousex, mousey, screen, 0xd6d6f5);
+		//player.playerTexture = playert;
+		screen->Clear(0x7393c7);
+		snow.UpdateGroundSnow(player.x, player.y, screen, 0xd6d6f5);
 		snow.UpdateSnowEffect(screen, 0xffffff);
 
+		player.SkiMovement(screen, 60, 1.5f, mousex, mousey);
 	}
 };
