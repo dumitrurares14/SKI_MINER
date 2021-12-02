@@ -52,23 +52,38 @@ class Snow : public Entity{
 public:
 	int groundSnowX[maxP], groundSnowY[maxP]; //ground snow positions
 	int effectSnowX[SNOWDENSITY], effectSnowY[SNOWDENSITY]; //snowing effect overlay positions
+	int initialSnowX[maxP], initialSnowY[maxP];
 
 	//GROUND SNOW//
 	void CreateGroundSnow() {
-		for (int i = 0; i < maxP; i++)
-			groundSnowX[i] = IRand(ScreenWidth), groundSnowY[i] = IRand(ScreenHeight);
+		for (int i = 0; i < maxP; i++) 
+		{
+			groundSnowX[i] = IRand(ScreenWidth);
+			groundSnowY[i] = IRand(ScreenHeight);
+			initialSnowX[i] = groundSnowX[i];
+			initialSnowY[i] = groundSnowY[i];
+		}
 	}
 
 	void UpdateGroundSnow(int objX,int objY, Surface* screen, int color) {
 		for (int i = 0; i < maxP; i++)
 		{
+			if (groundSnowY[i]< -20) {
+				//groundSnowX[i] = initialSnowX[i];
+				//groundSnowY[i] = initialSnowY[i]+ScreenHeight;
+				groundSnowY[i] = ScreenHeight+IRand(ScreenHeight);// +ScreenHeight;
+				groundSnowX[i] = IRand(ScreenWidth);
+			}
+			groundSnowY[i]--;
 			float dx = groundSnowX[i] - objX, dy = groundSnowY[i] - objY;
 			float dist = sqrtf(dx * dx + dy * dy);
 			if (dist < 10)
-				groundSnowX[i] += dx /dist * SNOWFORCE, groundSnowY[i] += dy / dist * SNOWFORCE;
+				groundSnowX[i] += dx / dist * SNOWFORCE, groundSnowY[i] += dy / dist * SNOWFORCE;
 			screen->Plot((int)groundSnowX[i], (int)groundSnowY[i], color);
+			
 		}
 	}
+
 	///////////////
 
 
@@ -125,6 +140,7 @@ public:
 
 	Player(Sprite* sprite) {
 		playerSprite = sprite;
+		y = 120;
 	}
 
 	void SkiMovement(Surface* screen,float dist, float speed, int objX,int objY) 
@@ -134,11 +150,12 @@ public:
 			if (x - objX < 0) {
 				x += 1 * speed;
 			}
-			else if (x - objX> 0) {
+			
+			if (x - objX> 0) {
 				x -= 1 * speed;
 			}
 		}
-		y += 1 * speed;
+		//y += 1 * speed;
 
 		playerSprite->Draw(screen, (int)x - 20, (int)y - 20);
 	}

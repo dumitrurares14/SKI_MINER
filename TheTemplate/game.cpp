@@ -41,7 +41,6 @@ namespace Tmpl8
 		screen->Clear(0x7393c7);
 		snow.UpdateGroundSnow(player.x, player.y, screen, 0xd6d6f5);
 		snow.UpdateSnowEffect(screen, 0xffffff);
-
-		player.SkiMovement(screen, 60, 1.5f, mousex, mousey);
+		player.SkiMovement(screen, 60, 3, mousex, mousey);
 	}
 };

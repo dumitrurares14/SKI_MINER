@@ -300,6 +300,8 @@ void swap()
 
 int main( int argc, char **argv ) 
 {  
+	//SDL_SetHintWithPriority(SDL_HINT_RENDER_VSYNC, "0", SDL_HINT_OVERRIDE);    //VSYNC off|Uncap fps
+
 #ifdef _MSC_VER
     if (!redirectIO())
         return 1;
