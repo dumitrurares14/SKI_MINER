@@ -52,7 +52,6 @@ class Snow : public Entity{
 public:
 	int groundSnowX[maxP], groundSnowY[maxP]; //ground snow positions
 	int effectSnowX[SNOWDENSITY], effectSnowY[SNOWDENSITY]; //snowing effect overlay positions
-	int initialSnowX[maxP], initialSnowY[maxP];
 
 	//GROUND SNOW//
 	void CreateGroundSnow() {
@@ -60,8 +59,6 @@ public:
 		{
 			groundSnowX[i] = IRand(ScreenWidth);
 			groundSnowY[i] = IRand(ScreenHeight);
-			initialSnowX[i] = groundSnowX[i];
-			initialSnowY[i] = groundSnowY[i];
 		}
 	}
 
@@ -69,9 +66,7 @@ public:
 		for (int i = 0; i < maxP; i++)
 		{
 			if (groundSnowY[i]< -20) {
-				//groundSnowX[i] = initialSnowX[i];
-				//groundSnowY[i] = initialSnowY[i]+ScreenHeight;
-				groundSnowY[i] = ScreenHeight+IRand(ScreenHeight);// +ScreenHeight;
+				groundSnowY[i] = ScreenHeight+IRand(ScreenHeight);
 				groundSnowX[i] = IRand(ScreenWidth);
 			}
 			groundSnowY[i]--;
