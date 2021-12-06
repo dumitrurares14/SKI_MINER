@@ -4,6 +4,7 @@ C:\dev\SKI_MINER\TheTemplate\game.h(73,41): warning C4244: 'initializing': conve
 C:\dev\SKI_MINER\TheTemplate\game.h(76,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
 C:\dev\SKI_MINER\TheTemplate\game.h(146,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
 C:\dev\SKI_MINER\TheTemplate\game.h(150,1): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+  surface.cpp
   template.cpp
 C:\dev\SKI_MINER\TheTemplate\game.h(73,13): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
 C:\dev\SKI_MINER\TheTemplate\game.h(73,41): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data

@@ -11,7 +11,7 @@ namespace Tmpl8
 	Snow snow;
 	Sprite playerSprite(new Surface("assets/ctankbase.tga"), 16);
 	Player player(&playerSprite);
-
+	//laptop change !!!!
 	// -----------------------------------------------------------
 	// Initialize the application
 	// -----------------------------------------------------------
