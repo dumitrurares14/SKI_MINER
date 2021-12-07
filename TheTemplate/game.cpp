@@ -11,7 +11,6 @@ namespace Tmpl8
 	Snow snow;
 	Sprite playerSprite(new Surface("assets/ctankbase.tga"), 16);
 	Player player(&playerSprite);
-	//laptop change !!!!
 	// -----------------------------------------------------------
 	// Initialize the application
 	// -----------------------------------------------------------
@@ -19,6 +18,7 @@ namespace Tmpl8
 	{
 		snow.CreateSnowEffect();
 		snow.CreateGroundSnow();
+		std::cout << "started12!";
 
 	}
 	

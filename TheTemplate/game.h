@@ -59,14 +59,16 @@ public:
 		{
 			groundSnowX[i] = IRand(ScreenWidth);
 			groundSnowY[i] = IRand(ScreenHeight);
+			//groundSnowX[i] = 0;
+			//groundSnowY[i] = 0;
 		}
 	}
 
 	void UpdateGroundSnow(int objX,int objY, Surface* screen, int color) {
 		for (int i = 0; i < maxP; i++)
 		{
-			if (groundSnowY[i]< -20) {
-				groundSnowY[i] = ScreenHeight+IRand(ScreenHeight);
+			if (groundSnowY[i]<0) {
+				groundSnowY[i] = groundSnowY[i] + ScreenHeight;
 				groundSnowX[i] = IRand(ScreenWidth);
 			}
 			groundSnowY[i]--;
