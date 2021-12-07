@@ -59,23 +59,31 @@ public:
 		{
 			groundSnowX[i] = IRand(ScreenWidth);
 			groundSnowY[i] = IRand(ScreenHeight);
-			//groundSnowX[i] = 0;
-			//groundSnowY[i] = 0;
 		}
 	}
 
 	void UpdateGroundSnow(int objX,int objY, Surface* screen, int color) {
 		for (int i = 0; i < maxP; i++)
 		{
+			//Checking bounds
+			//if a "snow pixel" gets outside the screen will got reset at the botom of the screen with a random x 
+			//this allows for infinite snow background generation
 			if (groundSnowY[i]<0) {
 				groundSnowY[i] = groundSnowY[i] + ScreenHeight;
 				groundSnowX[i] = IRand(ScreenWidth);
 			}
-			groundSnowY[i]--;
+
+			//-2 ---> scrolling speed
+			groundSnowY[i]=groundSnowY[i]-2;
+
+
+			//leaving trail behind you by moving the snow that is too close to you
+
 			float dx = groundSnowX[i] - objX, dy = groundSnowY[i] - objY;
 			float dist = sqrtf(dx * dx + dy * dy);
 			if (dist < 10)
 				groundSnowX[i] += dx / dist * SNOWFORCE, groundSnowY[i] += dy / dist * SNOWFORCE;
+			
 			screen->Plot((int)groundSnowX[i], (int)groundSnowY[i], color);
 			
 		}
