@@ -1,14 +1,7 @@
 ﻿  game.cpp
-C:\dev\SKI_MINER\TheTemplate\game.h(82,14): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(82,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(82,13): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(82,41): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
 C:\dev\SKI_MINER\TheTemplate\game.h(85,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(156,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(160,1): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
-  template.cpp
-C:\dev\SKI_MINER\TheTemplate\game.h(82,14): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(82,42): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(85,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(156,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(160,1): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
-  Generating Code...
+C:\dev\SKI_MINER\TheTemplate\game.h(177,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(181,1): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
   tmpl_2019-08.vcxproj -> C:\dev\SKI_MINER\TheTemplate\tmpl_2019-08_x86_debug.exe

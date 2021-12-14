@@ -138,6 +138,27 @@ public:
 
 };
 
+class OreGenerator {
+public:
+	Sprite* spriteTest = new Sprite(new Surface("assets/ball.png"), 1);
+	int randomX = IRand(ScreenWidth);
+	int y = ScreenHeight+50;
+	void StartGeneration(Surface* screen) {
+		spriteTest->Draw(screen, randomX, y);
+		
+		y=y-2;
+
+		if (y <-50) {
+			y = ScreenHeight + 50;
+			randomX = IRand(ScreenWidth-50);
+		}
+	}
+
+
+	
+	
+};
+
 
 class Player : public Entity {
 public:
