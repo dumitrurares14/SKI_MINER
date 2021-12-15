@@ -1,7 +1,15 @@
 ﻿  game.cpp
-C:\dev\SKI_MINER\TheTemplate\game.h(82,13): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(82,41): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(85,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(177,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(181,1): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(95,13): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(95,41): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(98,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(261,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(265,1): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+  template.cpp
+C:\dev\SKI_MINER\TheTemplate\game.h(95,13): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(95,41): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(98,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(261,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(265,1): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+  Generating Code...
+C:\dev\SKI_MINER\TheTemplate\game.h(194): warning C4715: 'Tmpl8::Ore::GenerateRandomType': not all control paths return a value
   tmpl_2019-08.vcxproj -> C:\dev\SKI_MINER\TheTemplate\tmpl_2019-08_x86_debug.exe

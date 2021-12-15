@@ -11,7 +11,8 @@ namespace Tmpl8
 	Snow snow;
 	Sprite playerSprite(new Surface("assets/ctankbase.tga"), 16);
 	Player player(&playerSprite);
-	Entity block;
+	OreGenerator oreGenerator;
+
 	// -----------------------------------------------------------
 	// Initialize the application
 	// -----------------------------------------------------------
@@ -19,7 +20,8 @@ namespace Tmpl8
 	{
 		snow.CreateSnowEffect();
 		snow.CreateGroundSnow();
-		std::cout << "started12!";
+		oreGenerator.InitOreGeneration();
+		std::cout << "started13!";
 
 	}
 	
@@ -35,7 +37,6 @@ namespace Tmpl8
 	// Main application tick function
 	// -----------------------------------------------------------
 
-	OreGenerator test;
 	void Game::Tick(float deltaTime)
 	{
 		//player.playerTexture = playert;
@@ -43,8 +44,7 @@ namespace Tmpl8
 		snow.UpdateGroundSnow(player.x+10, player.y, screen, 0xd6d6f5);
 		snow.UpdateSnowEffect(screen, 0xffffff);
 		player.SkiMovement(screen, 60, 3, mousex, mousey);
-		
-		test.StartGeneration(screen);
+		oreGenerator.UpdateOres(screen,player);
 		
 	}
 };
