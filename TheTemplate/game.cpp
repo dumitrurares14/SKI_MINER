@@ -9,7 +9,7 @@
 namespace Tmpl8
 {
 	Snow snow;
-	Sprite playerSprite(new Surface("assets/ctankbase.tga"), 16);
+	Sprite playerSprite(new Surface("assets/miner.png"),1);
 	Player player(&playerSprite);
 	OreGenerator oreGenerator;
 
@@ -43,7 +43,7 @@ namespace Tmpl8
 		screen->Clear(0x7393c7);
 		snow.UpdateGroundSnow(player.x+10, player.y, screen, 0xd6d6f5);
 		snow.UpdateSnowEffect(screen, 0xffffff);
-		player.SkiMovement(screen, 60, 3, mousex, mousey);
+		player.SkiMovement(screen, 5,3, mousex, mousey);
 		oreGenerator.UpdateOres(screen,player);
 		
 	}

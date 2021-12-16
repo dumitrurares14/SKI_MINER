@@ -5,8 +5,9 @@
 #include <cstdio> //printf
 
 
-namespace Tmpl8 {
 
+namespace Tmpl8 {
+#define GAMESPEED 2
 class Surface;
 class Game
 {
@@ -25,6 +26,7 @@ private:
 	int mousex, mousey;
 	int mouseButton;
 };
+
 
 
 
@@ -53,8 +55,94 @@ public:
 		entitySprite->Draw(screen, x, y);
 	}
 
-	void CheckPosition() {
-		
+	bool check_collision(Entity A, Entity B)
+	{
+		//The sides of the box
+		int leftA, leftB;
+		int rightA, rightB;
+		int topA, topB;
+		int bottomA, bottomB;
+
+		//Calculate the sides of box for Entity 1
+		leftA = A.x;
+		rightA = A.x + A.entitySprite->GetWidth();
+		topA = A.y;
+		bottomA = A.y + A.entitySprite->GetHeight();
+
+		//Calculate the sides of box for Entity 2
+		leftB = B.x;
+		rightB = B.x + B.entitySprite->GetWidth();
+		topB = B.y;
+		bottomB = B.y + B.entitySprite->GetHeight();
+
+		//If any of the sides from A are outside of B
+		if (bottomA <= topB)
+		{
+			return false;
+		}
+
+		if (topA >= bottomB)
+		{
+			return false;
+		}
+
+		if (rightA <= leftB)
+		{
+			return false;
+		}
+
+		if (leftA >= rightB)
+		{
+			return false;
+		}
+
+		//If none of the sides from A are outside B
+		return true;
+	}
+
+	bool check_collision(Entity B)
+	{
+		//The sides of the rectangles
+		int leftA, leftB;
+		int rightA, rightB;
+		int topA, topB;
+		int bottomA, bottomB;
+
+		//Calculate the sides of box for this entity
+		leftA = x;
+		rightA = x + entitySprite->GetWidth();
+		topA = y;
+		bottomA = y + entitySprite->GetHeight();
+
+		//Calculate the sides of box for entity 2
+		leftB = B.x;
+		rightB = B.x + B.entitySprite->GetWidth();
+		topB = B.y;
+		bottomB = B.y + B.entitySprite->GetHeight();
+
+		//If any of the sides from A are outside of B
+		if (bottomA <= topB)
+		{
+			return false;
+		}
+
+		if (topA >= bottomB)
+		{
+			return false;
+		}
+
+		if (rightA <= leftB)
+		{
+			return false;
+		}
+
+		if (leftA >= rightB)
+		{
+			return false;
+		}
+
+		//If none of the sides from A are outside B
+		return true;
 	}
 };
 
@@ -87,17 +175,24 @@ public:
 			}
 
 			//-2 ---> scrolling speed
-			groundSnowY[i]=groundSnowY[i]-2;
+			groundSnowY[i]=groundSnowY[i]-GAMESPEED;
 
 
-			//leaving trail behind you by moving the snow that is too close to you
+			//leaving trail behind you(for each ski) by moving the snow that is too close to you
 
-			float dx = groundSnowX[i] - objX, dy = groundSnowY[i] - objY;
+			float dx = groundSnowX[i] - objX-20, dy = groundSnowY[i] - objY-10;
 			float dist = sqrtf(dx * dx + dy * dy);
 			if (dist < 10)
 				groundSnowX[i] += dx / dist * SNOWFORCE, groundSnowY[i] += dy / dist * SNOWFORCE;
+
+			float dx2 = groundSnowX[i] - objX -5, dy2 = groundSnowY[i] - objY - 10;
+			float dist2 = sqrtf(dx2 * dx2 + dy2 * dy2);
+			if (dist2 < 10)
+				groundSnowX[i] += dx2 / dist2 * SNOWFORCE, groundSnowY[i] += dy2 / dist2 * SNOWFORCE;
 			
 			screen->Plot((int)groundSnowX[i], (int)groundSnowY[i], color);
+
+
 			
 		}
 	}
@@ -152,99 +247,6 @@ public:
 };
 
 
-class Ore : public Entity {
-#define COALVALUE 10
-#define GOLDVALUE 25
-#define DMDVALUE 50
-#define GEMVALUE 100
-public: 
-	enum Type { coal, gold, diamond, gem};
-	int oreValue = 0;
-
-	Ore(Type type) {
-		switch (type)
-		{
-		case coal:
-			this->SetSprite(new Sprite(new Surface("assets/cube3.png"), 1));
-			oreValue = COALVALUE;
-			break;
-		case gold:
-			this->SetSprite(new Sprite(new Surface("assets/cube1.png"), 1));
-			oreValue = GOLDVALUE;
-			break;
-		case diamond:
-			this->SetSprite(new Sprite(new Surface("assets/cube2.png"), 1));
-			oreValue = DMDVALUE;
-			break;
-		case gem:
-			this->SetSprite(new Sprite(new Surface("assets/ball.png"), 1));
-			oreValue = GEMVALUE;
-			break;
-		default:
-			break;
-		}
-	}
-
-	Type GenerateRandomType() {
-		int randomNumber = rand() % 100;
-		if (randomNumber < 70)return Type::coal;
-		else if (randomNumber > 70 && randomNumber < 90) return Type::gold;
-		else if (randomNumber > 90 && randomNumber < 97) return Type::diamond;
-		else if (randomNumber>97 && randomNumber <101)return gem;
-	}
-
-	Ore() {
-		Type type = GenerateRandomType();
-		switch (type)
-		{
-		case coal:
-			this->SetSprite(new Sprite(new Surface("assets/cube3.png"), 1));
-			oreValue = COALVALUE;
-			break;
-		case gold:
-			this->SetSprite(new Sprite(new Surface("assets/cube1.png"), 1));
-			oreValue = GOLDVALUE;
-			break;
-		case diamond:
-			this->SetSprite(new Sprite(new Surface("assets/cube2.png"), 1));
-			oreValue = DMDVALUE;
-			break;
-		case gem:
-			this->SetSprite(new Sprite(new Surface("assets/ball.png"), 1));
-			oreValue = GEMVALUE;
-			break;
-		default:
-			break;
-		}
-	}
-
-	void RegenerateOre() {
-		Type type = GenerateRandomType();
-		switch (type)
-		{
-		case coal:
-			this->SetSprite(new Sprite(new Surface("assets/cube3.png"), 1));
-			oreValue = COALVALUE;
-			break;
-		case gold:
-			this->SetSprite(new Sprite(new Surface("assets/cube1.png"), 1));
-			oreValue = GOLDVALUE;
-			break;
-		case diamond:
-			this->SetSprite(new Sprite(new Surface("assets/cube2.png"), 1));
-			oreValue = DMDVALUE;
-			break;
-		case gem:
-			this->SetSprite(new Sprite(new Surface("assets/ball.png"), 1));
-			oreValue = GEMVALUE;
-			break;
-		default:
-			break;
-		}
-
-
-	}
-};
 class Player : public Entity {
 public:
 	Sprite* playerSprite = nullptr;
@@ -259,11 +261,15 @@ public:
 		if (abs(x - objX) > dist || abs(y - objY > dist)) {
 			if (x - objX < 0) {
 				x += 1 * speed;
+				playerSprite = new Sprite(new Surface("assets/miner_right.png"), 1);
 			}
-			
-			if (x - objX> 0) {
+			else if (x - objX > 0) {
 				x -= 1 * speed;
+				playerSprite = new Sprite(new Surface("assets/miner_left.png"), 1);
 			}
+		}
+		else {
+			playerSprite = new Sprite(new Surface("assets/miner.png"), 1);
 		}
 		//y += 1 * speed;
 
@@ -273,8 +279,84 @@ public:
 
 };
 
+class Ore : public Entity {
+//different values based on the type of ore
+#define COALVALUE 10
+#define GOLDVALUE 25
+#define DMDVALUE 50
+#define GEMVALUE 100
+public: 
+	enum Type { coal, gold, diamond, gem};
+	int oreValue = 0;
+
+	//constructor with specified ore type
+	Ore(Type type) {
+		switch (type)
+		{
+		case coal:
+			this->SetSprite(new Sprite(new Surface("assets/coal.png"), 1));
+			oreValue = COALVALUE;
+			break;
+		case gold:
+			this->SetSprite(new Sprite(new Surface("assets/gold.png"), 1));
+			oreValue = GOLDVALUE;
+			break;
+		case diamond:
+			this->SetSprite(new Sprite(new Surface("assets/diamond.png"), 1));
+			oreValue = DMDVALUE;
+			break;
+		case gem:
+			this->SetSprite(new Sprite(new Surface("assets/gem.png"), 1));
+			oreValue = GEMVALUE;
+			break;
+		default:
+			break;
+		}
+	}
+
+	//constructor with random ore type
+	Ore() {
+		RegenerateOre();
+	}
+
+	//Generating a random  ore type with certain weight/ rarity
+	Type GenerateRandomType() {
+		int randomNumber = rand() % 100;
+		if (randomNumber < 70)return Type::coal;
+		else if (randomNumber > 70 && randomNumber < 90) return Type::gold;
+		else if (randomNumber > 90 && randomNumber < 97) return Type::diamond;
+		else if (randomNumber>97 && randomNumber <101)return gem;
+	}
+
+	//assigning the ore another random type 
+	void RegenerateOre() {
+		Type type = GenerateRandomType();
+		switch (type)
+		{
+		case coal:
+			this->SetSprite(new Sprite(new Surface("assets/coal.png"), 1));
+			oreValue = COALVALUE;
+			break;
+		case gold:
+			this->SetSprite(new Sprite(new Surface("assets/gold.png"), 1));
+			oreValue = GOLDVALUE;
+			break;
+		case diamond:
+			this->SetSprite(new Sprite(new Surface("assets/diamond.png"), 1));
+			oreValue = DMDVALUE;
+			break;
+		case gem:
+			this->SetSprite(new Sprite(new Surface("assets/gem.png"), 1));
+			oreValue = GEMVALUE;
+			break;
+		default:
+			break;
+		}
+	}
+};
+
 class OreGenerator {
-#define ORES 3
+#define ORES 3 // amount of max ores
 public:
 
 	Ore* ores[ORES]{
@@ -284,30 +366,29 @@ public:
 	};
 
 	
-
-	void InitOreGeneration() {
+	//Initialize the first ores (spawning them outside the screen)
+	void InitOreGeneration() 
+	{
 		for (int i = 0; i < ORES; i++) {
-
 			ores[i]->x= IRand(ScreenWidth);
 			ores[i]->y= ScreenHeight + rand() % 600 + 50;
 		}
 	}
 
+	//Ore behaviour
 	void UpdateOres(Surface* screen,Player player) {
-		for (int i = 0; i < ORES; i++) {
-			screen->Plot(ores[i]->x-1 , ores[i]->y, 0x00FF13);
-			screen->Plot(ores[i]->x + ores[i]->entitySprite->GetWidth(), ores[i]->y, 0x00FF13);
-			
-			if (player.x >= ores[i]->x && player.x <= ores[i]->x + ores[i]->entitySprite->GetWidth() && (player.y-ores[i]->y <50 && player.y-ores[i]->y >-50))
-			{
+		for (int i = 0; i < ORES; i++) {	
+
+			//checking if player collided with an ore
+			if (player.check_collision(static_cast<Entity>(*ores[i]))) {
+				//the player just hit an ore hp-- and all that stuff
+				//to be added
 				printf("COLIDED!");
 			}
-			/*if (player.x == ores[i]->x && player.y == ores[i]->y) {
-				printf("COLDIED");
-			}*/
-			ores[i]->RenderThis(screen, ores[i]->x, ores[i]->y);
-			ores[i]->y = (ores[i]->y) - 2;
 			
+
+
+			//if the ore is outside the screen we "regenerate the ore" and gives it another random position under the screen.
 			if (ores[i]->y < -50) {
 				ores[i]->RegenerateOre();
 	
@@ -315,6 +396,11 @@ public:
 				ores[i]->x = IRand(ScreenWidth - 50);
 			}
 
+			//rendering the ore
+			//we move the ore to get the illusion of player movement. 
+			//The player is just moving on the x and everything else moves towards or away from the player.
+			ores[i]->RenderThis(screen, ores[i]->x, ores[i]->y);
+			ores[i]->y = (ores[i]->y) - GAMESPEED;
 		}
 	}
 
