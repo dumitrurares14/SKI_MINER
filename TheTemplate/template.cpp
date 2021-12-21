@@ -387,6 +387,7 @@ int main( int argc, char **argv )
 					// find other keys here: http://sdl.beuc.net/sdl.wiki/SDLKey
 				}
 				game->KeyDown( event.key.keysym.scancode );
+				//game->KeyDown(event.key.state);
 				break;
 			case SDL_KEYUP:
 				game->KeyUp( event.key.keysym.scancode );

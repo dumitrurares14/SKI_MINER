@@ -19,12 +19,33 @@ public:
 	void MouseUp(int button) { mouseButton = 0; }
 	void MouseDown(int button) { mouseButton = button; }
 	void MouseMove(int x, int y) { mousex = x, mousey = y; }
-	void KeyUp( int key ) { /* implement if you want to handle keys */ }
-	void KeyDown( int key ) { /* implement if you want to handle keys */ }
+	void KeyDown(int key) {
+		keyPressed = key;
+	}
+	void KeyUp(int key) 
+	{
+		keyPressed = key;
+		isPressed = false;
+	}
+
+	bool KeyPressed(int key) {
+		if (!isPressed) {
+			keyPressed = key;
+			isPressed = true;
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+	
 private:
 	Surface* screen;
 	int mousex, mousey;
 	int mouseButton;
+	int keyPressed=0;
+	bool isPressed=false;
+
 };
 
 
@@ -33,7 +54,7 @@ private:
 
 class Entity {
 public:
-	Sprite* entitySprite = new Sprite(new Surface("assets/ball.png"), 1);
+	Sprite* entitySprite = new Sprite(new Surface("assets/cube1.png"), 1);
 	int x, y;
 
 
@@ -53,6 +74,11 @@ public:
 	}
 	void RenderThis(Surface* screen,int x, int y) {
 		entitySprite->Draw(screen, x, y);
+	}
+
+	void RenderThis(Surface* screen)
+	{
+		entitySprite->Draw(screen,x,y);
 	}
 
 	bool check_collision(Entity A, Entity B)
@@ -249,15 +275,36 @@ public:
 
 class Player : public Entity {
 public:
+	int score=0;
+	Sprite* pickDebugSprite = new Sprite(new Surface("assets/PickDebug.png"), 1);
 	Sprite* playerSprite = nullptr;
+	Entity leftPick;
+	Entity rightPick;
+	int leftPickDist =-50;
+	int rightPickDist = 40;
 
 	Player(Sprite* sprite) {
+		score = 0;
 		playerSprite = sprite;
 		y = 120;
+		leftPick.SetSprite(pickDebugSprite);
+		rightPick.SetSprite(pickDebugSprite);
 	}
 
 	void SkiMovement(Surface* screen,float dist, float speed, int objX,int objY) 
 	{
+		
+		leftPick.y = y;
+		rightPick.y = y;
+
+		leftPick.x = (x + leftPickDist);
+		rightPick.x = (x + rightPickDist);
+
+		//leftPick.RenderThis(screen);
+		//rightPick.RenderThis(screen);
+		
+
+
 		if (abs(x - objX) > dist || abs(y - objY > dist)) {
 			if (x - objX < 0) {
 				x += 1 * speed;
@@ -275,7 +322,13 @@ public:
 
 		playerSprite->Draw(screen, x, y);
 	}
-	
+
+	void AddScore(int newScore) 
+	{
+		score = score + newScore;
+	}
+
+
 
 };
 
@@ -353,6 +406,10 @@ public:
 			break;
 		}
 	}
+
+	void ScoreThisOre(Player player) {
+		player.AddScore(100);
+	}
 };
 
 class OreGenerator {
@@ -376,14 +433,33 @@ public:
 	}
 
 	//Ore behaviour
-	void UpdateOres(Surface* screen,Player player) {
+	void UpdateOres(Surface* screen,Player &player,bool isMining,int key) {
 		for (int i = 0; i < ORES; i++) {	
-
+			
 			//checking if player collided with an ore
-			if (player.check_collision(static_cast<Entity>(*ores[i]))) {
+			if (player.check_collision(static_cast<Entity>(*ores[i]))) 
+			{
 				//the player just hit an ore hp-- and all that stuff
 				//to be added
-				printf("COLIDED!");
+				printf("PLAYER COLIDED!");
+			}
+
+			if (player.leftPick.check_collision(static_cast<Entity>(*ores[i])) && isMining==1 && key==20) 
+			{
+				printf("DEBUG: LEFT PICK COLLIDEd AND ADDED SCORE!");
+				player.score += ores[i]->oreValue;
+				ores[i]->RegenerateOre();
+				ores[i]->y = ScreenHeight + rand() % 600 + 50;
+				ores[i]->x = IRand(ScreenWidth - 50);
+			}
+
+			if (player.rightPick.check_collision(static_cast<Entity>(*ores[i])) && isMining == 1 && key == 8)
+			{
+				printf("DEBUG: RIGHT PICK COLLIDEd AND ADDED SCORE!");
+				player.score += ores[i]->oreValue;
+				ores[i]->RegenerateOre();
+				ores[i]->y = ScreenHeight + rand() % 600 + 50;
+				ores[i]->x = IRand(ScreenWidth - 50);
 			}
 			
 

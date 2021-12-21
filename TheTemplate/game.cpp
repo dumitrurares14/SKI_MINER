@@ -21,7 +21,7 @@ namespace Tmpl8
 		snow.CreateSnowEffect();
 		snow.CreateGroundSnow();
 		oreGenerator.InitOreGeneration();
-		std::cout << "started13!";
+		std::cout << "started14!";
 
 	}
 	
@@ -39,12 +39,15 @@ namespace Tmpl8
 
 	void Game::Tick(float deltaTime)
 	{
+		bool foo = KeyPressed(keyPressed);
 		//player.playerTexture = playert;
 		screen->Clear(0x7393c7);
 		snow.UpdateGroundSnow(player.x+10, player.y, screen, 0xd6d6f5);
 		snow.UpdateSnowEffect(screen, 0xffffff);
 		player.SkiMovement(screen, 5,3, mousex, mousey);
-		oreGenerator.UpdateOres(screen,player);
+		oreGenerator.UpdateOres(screen,player, foo,keyPressed);
+		
+
 		
 	}
 };
