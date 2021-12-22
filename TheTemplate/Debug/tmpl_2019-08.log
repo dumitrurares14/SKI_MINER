@@ -1,21 +1,11 @@
 ﻿  game.cpp
-C:\dev\SKI_MINER\TheTemplate\game.h(209,13): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(209,44): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(212,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(214,14): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(214,46): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(217,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(310,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(314,1): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
-  template.cpp
-C:\dev\SKI_MINER\TheTemplate\game.h(209,13): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(209,44): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(212,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(214,14): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(214,46): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(217,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(310,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
-C:\dev\SKI_MINER\TheTemplate\game.h(314,1): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
-  Generating Code...
-C:\dev\SKI_MINER\TheTemplate\game.h(382): warning C4715: 'Tmpl8::Ore::GenerateRandomType': not all control paths return a value
+C:\dev\SKI_MINER\TheTemplate\game.h(208,13): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(208,44): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(211,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(213,14): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(213,46): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(216,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(316,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(321,1): warning C4244: '-=': conversion from 'float' to 'int', possible loss of data
+C:\dev\SKI_MINER\TheTemplate\game.h(393): warning C4715: 'Tmpl8::Ore::GenerateRandomType': not all control paths return a value
   tmpl_2019-08.vcxproj -> C:\dev\SKI_MINER\TheTemplate\tmpl_2019-08_x86_debug.exe

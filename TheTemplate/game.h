@@ -6,6 +6,8 @@
 
 
 
+
+
 namespace Tmpl8 {
 #define GAMESPEED 2
 class Surface;
@@ -47,9 +49,6 @@ private:
 	bool isPressed=false;
 
 };
-
-
-
 
 
 class Entity {
@@ -277,47 +276,58 @@ class Player : public Entity {
 public:
 	int score=0;
 	Sprite* pickDebugSprite = new Sprite(new Surface("assets/PickDebug.png"), 1);
-	Sprite* playerSprite = nullptr;
+	Sprite* playerSprite = new Sprite(new Surface("assets/miner_full.png"), 5);;
 	Entity leftPick;
 	Entity rightPick;
 	int leftPickDist =-50;
 	int rightPickDist = 40;
+	bool isMiningLeft = false;
+	bool isMiningRight = false;
 
-	Player(Sprite* sprite) {
+	Player() {
 		score = 0;
-		playerSprite = sprite;
 		y = 120;
 		leftPick.SetSprite(pickDebugSprite);
 		rightPick.SetSprite(pickDebugSprite);
 	}
 
-	void SkiMovement(Surface* screen,float dist, float speed, int objX,int objY) 
+	void SkiMovement(Surface* screen,float dist, float speed, int objX,int objY,int key) 
 	{
-		
+		bool isMining = isMiningLeft || isMiningRight;
 		leftPick.y = y;
 		rightPick.y = y;
 
 		leftPick.x = (x + leftPickDist);
 		rightPick.x = (x + rightPickDist);
 
-		//leftPick.RenderThis(screen);
-		//rightPick.RenderThis(screen);
-		
+		//leftPick.RenderThis(screen); //DEBUG MINE 
+		//rightPick.RenderThis(screen); //DEBUG MINE
 
+		if (isMiningLeft) {
+			playerSprite->SetFrame(3);
+		}
+
+		if (isMiningRight) {
+			playerSprite->SetFrame(4);
+		}
 
 		if (abs(x - objX) > dist || abs(y - objY > dist)) {
 			if (x - objX < 0) {
 				x += 1 * speed;
-				playerSprite = new Sprite(new Surface("assets/miner_right.png"), 1);
+				if (!isMining)
+				playerSprite->SetFrame(2);
 			}
 			else if (x - objX > 0) {
 				x -= 1 * speed;
-				playerSprite = new Sprite(new Surface("assets/miner_left.png"), 1);
+				if (!isMining)
+				playerSprite->SetFrame(1);
 			}
 		}
 		else {
-			playerSprite = new Sprite(new Surface("assets/miner.png"), 1);
+			if (!isMining)
+			playerSprite->SetFrame(0);
 		}
+		
 		//y += 1 * speed;
 
 		playerSprite->Draw(screen, x, y);
@@ -341,6 +351,7 @@ class Ore : public Entity {
 public: 
 	enum Type { coal, gold, diamond, gem};
 	int oreValue = 0;
+	bool isMined = false;
 
 	//constructor with specified ore type
 	Ore(Type type) {
@@ -444,25 +455,33 @@ public:
 				printf("PLAYER COLIDED!");
 			}
 
-			if (player.leftPick.check_collision(static_cast<Entity>(*ores[i])) && isMining==1 && key==20) 
+			if( (player.leftPick.check_collision(static_cast<Entity>(*ores[i])) && isMining==1 && key==20))
 			{
-				printf("DEBUG: LEFT PICK COLLIDEd AND ADDED SCORE!");
+				ores[i]->isMined = true;
+				player.isMiningLeft = true;
 				player.score += ores[i]->oreValue;
-				ores[i]->RegenerateOre();
-				ores[i]->y = ScreenHeight + rand() % 600 + 50;
-				ores[i]->x = IRand(ScreenWidth - 50);
 			}
 
 			if (player.rightPick.check_collision(static_cast<Entity>(*ores[i])) && isMining == 1 && key == 8)
 			{
-				printf("DEBUG: RIGHT PICK COLLIDEd AND ADDED SCORE!");
+				ores[i]->isMined = true;
+				player.isMiningRight = true;
 				player.score += ores[i]->oreValue;
-				ores[i]->RegenerateOre();
-				ores[i]->y = ScreenHeight + rand() % 600 + 50;
-				ores[i]->x = IRand(ScreenWidth - 50);
 			}
 			
 
+			if (ores[i]->isMined == true) {
+				int dist = abs(player.y - ores[i]->y);
+				if (dist > 35) {
+					ores[i]->RegenerateOre();
+					ores[i]->y = ScreenHeight + rand() % 600 + 50;
+					ores[i]->x = IRand(ScreenWidth - 50);
+					player.isMiningLeft = false;
+					player.isMiningRight = false;
+					ores[i]->isMined = false;
+				}
+			}
+			
 
 			//if the ore is outside the screen we "regenerate the ore" and gives it another random position under the screen.
 			if (ores[i]->y < -50) {
