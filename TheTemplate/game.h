@@ -3,13 +3,12 @@
 #include "template.h"
 #include <SDL.h>
 #include <cstdio> //printf
-
-
-
+#include <string>
+#include <Windows.h>
 
 
 namespace Tmpl8 {
-#define GAMESPEED 2
+#define GAMESPEED 80.0f
 class Surface;
 class Game
 {
@@ -54,39 +53,43 @@ private:
 class Entity {
 public:
 	Sprite* entitySprite = new Sprite(new Surface("assets/cube1.png"), 1);
-	int x, y;
+	float x, y;
+	bool oneHitFlag = false;
 
 
 	Entity() {
 		x = 0;
 		y = 0;
+		oneHitFlag = false;
 	}
 
 	Entity(Sprite* sprite) {
 		entitySprite = sprite;
 		x = 0;
 		y = 0;
+		oneHitFlag = false;
 	}
 
 	void SetSprite(Sprite* sprite) {
 		entitySprite = sprite;
 	}
-	void RenderThis(Surface* screen,int x, int y) {
+	void RenderThis(Surface* screen, int x, int y) {
 		entitySprite->Draw(screen, x, y);
 	}
 
+
 	void RenderThis(Surface* screen)
 	{
-		entitySprite->Draw(screen,x,y);
+		entitySprite->Draw(screen, (int)x, (int)y);
 	}
 
 	bool check_collision(Entity A, Entity B)
 	{
 		//The sides of the box
-		int leftA, leftB;
-		int rightA, rightB;
-		int topA, topB;
-		int bottomA, bottomB;
+		float leftA, leftB;
+		float rightA, rightB;
+		float topA, topB;
+		float bottomA, bottomB;
 
 		//Calculate the sides of box for Entity 1
 		leftA = A.x;
@@ -128,10 +131,10 @@ public:
 	bool check_collision(Entity B)
 	{
 		//The sides of the rectangles
-		int leftA, leftB;
-		int rightA, rightB;
-		int topA, topB;
-		int bottomA, bottomB;
+		float leftA, leftB;
+		float rightA, rightB;
+		float topA, topB;
+		float bottomA, bottomB;
 
 		//Calculate the sides of box for this entity
 		leftA = x;
@@ -169,26 +172,45 @@ public:
 		//If none of the sides from A are outside B
 		return true;
 	}
+
+	void DebugCollision(Surface* screen)
+	{
+		//The sides of the rectangles
+		float leftA;
+		float rightA;
+		float topA;
+		float bottomA;
+
+		//Calculate the sides of box for this entity
+		leftA = x;
+		rightA = x + entitySprite->GetWidth();
+		topA = y;
+		bottomA = y + entitySprite->GetHeight();
+
+		screen->Box((int)leftA,(int)topA,(int)rightA,(int)bottomA,0xff0000);
+	}
+
 };
 
 class Snow : public Entity{
 #define maxP 200000 //amount of snow ground particles
 #define SNOWDENSITY 200 // amount of snow particles on screen
-#define SNOWFORCE 1 // force multiplier for moving ground snow
+#define SNOWFORCE 45.0f // force multiplier for moving ground snow
 public:
-	int groundSnowX[maxP], groundSnowY[maxP]; //ground snow positions
-	int effectSnowX[SNOWDENSITY], effectSnowY[SNOWDENSITY]; //snowing effect overlay positions
-
+	float groundSnowX[maxP] = { 0.0f};
+	float groundSnowY[maxP] = { 0.0f}; //ground snow positions
+	float effectSnowX[SNOWDENSITY] = {0.0f };
+	float effectSnowY[SNOWDENSITY] = {0.0f }; //snowing effect overlay positions
 	//GROUND SNOW//
 	void CreateGroundSnow() {
 		for (int i = 0; i < maxP; i++) 
 		{
-			groundSnowX[i] = IRand(ScreenWidth);
-			groundSnowY[i] = IRand(ScreenHeight);
+			groundSnowX[i] = Rand(ScreenWidth);
+			groundSnowY[i] = Rand(ScreenHeight);
 		}
 	}
 
-	void UpdateGroundSnow(int objX,int objY, Surface* screen, int color) {
+	void UpdateGroundSnow(int objX,int objY, Surface* screen, int color,float deltaTime) {
 		for (int i = 0; i < maxP; i++)
 		{
 			//Checking bounds
@@ -196,11 +218,14 @@ public:
 			//this allows for infinite snow background generation
 			if (groundSnowY[i]<0) {
 				groundSnowY[i] = groundSnowY[i] + ScreenHeight;
-				groundSnowX[i] = IRand(ScreenWidth);
+				groundSnowX[i] = Rand(ScreenWidth) ;
 			}
+			
 
 			//-2 ---> scrolling speed
-			groundSnowY[i]=groundSnowY[i]-GAMESPEED;
+			groundSnowY[i] = groundSnowY[i] - GAMESPEED * deltaTime/1000;
+
+			groundSnowY[i] = floorf(groundSnowY[i]);
 
 
 			//leaving trail behind you(for each ski) by moving the snow that is too close to you
@@ -208,12 +233,12 @@ public:
 			float dx = groundSnowX[i] - objX-20, dy = groundSnowY[i] - objY-10;
 			float dist = sqrtf(dx * dx + dy * dy);
 			if (dist < 10)
-				groundSnowX[i] += dx / dist * SNOWFORCE, groundSnowY[i] += dy / dist * SNOWFORCE;
+				groundSnowX[i] += dx / dist * SNOWFORCE * deltaTime/1000 , groundSnowY[i] += dy / dist * SNOWFORCE *deltaTime / 1000;
 
 			float dx2 = groundSnowX[i] - objX -5, dy2 = groundSnowY[i] - objY - 10;
 			float dist2 = sqrtf(dx2 * dx2 + dy2 * dy2);
 			if (dist2 < 10)
-				groundSnowX[i] += dx2 / dist2 * SNOWFORCE, groundSnowY[i] += dy2 / dist2 * SNOWFORCE;
+				groundSnowX[i] += dx2 / dist2 * SNOWFORCE * deltaTime / 1000, groundSnowY[i] += dy2 / dist2 * SNOWFORCE * deltaTime / 1000;
 			
 			screen->Plot((int)groundSnowX[i], (int)groundSnowY[i], color);
 
@@ -228,34 +253,36 @@ public:
 	//SNOW EFFECT OVERLAY//
 	void CreateSnowEffect() {
 		for (int i = 0; i < SNOWDENSITY; i++) {
-			effectSnowX[i] = IRand(ScreenWidth);
-			effectSnowY[i] = IRand(ScreenHeight);
+			effectSnowX[i] = Rand(ScreenWidth);
+			effectSnowY[i] = Rand(ScreenHeight);
 		}
 	}
 
-	void UpdateSnowEffect(Surface* screen,int color) {
+	void UpdateSnowEffect(Surface* screen, int color, float deltaTime) {
 		for (int i = 0; i < SNOWDENSITY; i++) {
 			//giving bounds and reseting snowflakes that are off screen
 			if (effectSnowY[i] > ScreenHeight) {
-				effectSnowY[i] = 0;
+				effectSnowY[i] = 0.0f;
 			}
 			if (effectSnowX[i] > ScreenWidth) {
-				effectSnowX[i] = 0;
+				effectSnowX[i] = 0.0f;
 			}
 
 			//calculating different fall speed for each snowflakes "layer" to achieve a random and natural effect
-			effectSnowX[i]++;
+			effectSnowX[i]+= 100 * deltaTime/1000;
 			if (i % 10 >= 0 && i % 10 <= 3) {
-				effectSnowY[i] = effectSnowY[i] + 1;
+				//effectSnowY[i] = effectSnowY[i] + 1 * deltaTime/1000;
+				effectSnowY[i] += 100 * deltaTime / 1000;
 			}
 			else if (i % 10 >= 5 && i % 10 <= 9) {
-				effectSnowY[i] = effectSnowY[i] + 2;
+				//effectSnowY[i] = effectSnowY[i] + 2 *deltaTime / 1000;
+				effectSnowY[i] += 200 * deltaTime / 1000;
 			}
 			else
 			{
-				effectSnowY[i] = effectSnowY[i] + 3;
+				//effectSnowY[i] = effectSnowY[i] + 3  *deltaTime / 1000;
+				effectSnowY[i] += 300* deltaTime / 1000;
 			}
-			
 
 			//Drawing the snowflake in an "X" shape
 			screen->Plot((int)effectSnowX[i], (int)effectSnowY[i], color);
@@ -275,30 +302,32 @@ public:
 class Player : public Entity {
 public:
 	int score=0;
+	int health = 3;
 	Sprite* pickDebugSprite = new Sprite(new Surface("assets/PickDebug.png"), 1);
-	Sprite* playerSprite = new Sprite(new Surface("assets/miner_full.png"), 5);;
+	Sprite* playerSprite = new Sprite(new Surface("assets/miner_full.png"), 5);
+	Sprite* heartSprite = new Sprite(new Surface("assets/heart.png"), 1);
 	Entity leftPick;
 	Entity rightPick;
 	int leftPickDist =-50;
 	int rightPickDist = 40;
 	bool isMiningLeft = false;
 	bool isMiningRight = false;
+	bool gameOver = false;
 
 	Player() {
 		score = 0;
+		health = 3;
 		y = 120;
-		leftPick.SetSprite(pickDebugSprite);
-		rightPick.SetSprite(pickDebugSprite);
 	}
 
-	void SkiMovement(Surface* screen,float dist, float speed, int objX,int objY,int key) 
+	void SkiMovement(Surface* screen,float dist, float speed, int objX,int objY,int key,float deltaTime) 
 	{
 		bool isMining = isMiningLeft || isMiningRight;
 		leftPick.y = y;
 		rightPick.y = y;
 
-		leftPick.x = (x + leftPickDist);
-		rightPick.x = (x + rightPickDist);
+		leftPick.x = x + leftPickDist;
+		rightPick.x = x + rightPickDist;
 
 		//leftPick.RenderThis(screen); //DEBUG MINE 
 		//rightPick.RenderThis(screen); //DEBUG MINE
@@ -313,12 +342,12 @@ public:
 
 		if (abs(x - objX) > dist || abs(y - objY > dist)) {
 			if (x - objX < 0) {
-				x += 1 * speed;
+				x += 1 * speed *deltaTime / 1000;
 				if (!isMining)
 				playerSprite->SetFrame(2);
 			}
 			else if (x - objX > 0) {
-				x -= 1 * speed;
+				x -= 1 * speed*deltaTime / 1000;
 				if (!isMining)
 				playerSprite->SetFrame(1);
 			}
@@ -329,17 +358,38 @@ public:
 		}
 		
 		//y += 1 * speed;
-
-		playerSprite->Draw(screen, x, y);
+		playerSprite->Draw(screen, (int)x, (int)y);
 	}
-
-	void AddScore(int newScore) 
+	
+	void ShowScore(Surface* screen)
 	{
-		score = score + newScore;
+		std::string str = std::to_string(score) ;
+		char* cstr = &str[0];
+		screen->Print(cstr,(int)(x+15),(int)(y-20), 0xb81a4c);
 	}
 
+	void ShowHealth(Surface* screen) 
+	{
+		for (int k=20,i = 0; i < health; i++) {
+			heartSprite->DrawScaled(k, 20, 40, 40, screen);
+			k += 50;
+		}
+	}
 
+	void TakeDamage() 
+	{
+		health--;
+		if (health <= 0) {
+			printf("\nGAME OVER!\n");
+			gameOver = true;
+		}
+	}
 
+	void PlayerReset() {
+		score = 0;
+		health = 3;
+		y = 120;
+	}
 };
 
 class Ore : public Entity {
@@ -418,9 +468,6 @@ public:
 		}
 	}
 
-	void ScoreThisOre(Player player) {
-		player.AddScore(100);
-	}
 };
 
 class OreGenerator {
@@ -438,28 +485,35 @@ public:
 	void InitOreGeneration() 
 	{
 		for (int i = 0; i < ORES; i++) {
-			ores[i]->x= IRand(ScreenWidth);
-			ores[i]->y= ScreenHeight + rand() % 600 + 50;
+			ores[i]->x= Rand(ScreenWidth);
+			ores[i]->y= ScreenHeight + rand() % 600 + 50.0f;
+			ores[i]->oneHitFlag = false;
 		}
 	}
 
 	//Ore behaviour
-	void UpdateOres(Surface* screen,Player &player,bool isMining,int key) {
+	void UpdateOres(Surface* screen,Player &player,bool isMining,int key,float deltaTime) {
 		for (int i = 0; i < ORES; i++) {	
 			
 			//checking if player collided with an ore
-			if (player.check_collision(static_cast<Entity>(*ores[i]))) 
+			if (player.check_collision(static_cast<Entity>(*ores[i])) && !ores[i]->oneHitFlag)
 			{
 				//the player just hit an ore hp-- and all that stuff
 				//to be added
+				ores[i]->oneHitFlag = true;
 				printf("PLAYER COLIDED!");
+				player.TakeDamage();
+				PlaySound("sounds/hurt.wav", NULL, SND_FILENAME | SND_ASYNC);
 			}
+			
 
 			if( (player.leftPick.check_collision(static_cast<Entity>(*ores[i])) && isMining==1 && key==20))
 			{
 				ores[i]->isMined = true;
 				player.isMiningLeft = true;
 				player.score += ores[i]->oreValue;
+
+				PlaySound("sounds/mine.wav", NULL, SND_FILENAME | SND_ASYNC);
 			}
 
 			if (player.rightPick.check_collision(static_cast<Entity>(*ores[i])) && isMining == 1 && key == 8)
@@ -467,15 +521,19 @@ public:
 				ores[i]->isMined = true;
 				player.isMiningRight = true;
 				player.score += ores[i]->oreValue;
+
+				PlaySound("sounds/mine.wav", NULL, SND_FILENAME | SND_ASYNC);
 			}
+
 			
 
 			if (ores[i]->isMined == true) {
-				int dist = abs(player.y - ores[i]->y);
+				float dist = abs(player.y - ores[i]->y);
 				if (dist > 35) {
 					ores[i]->RegenerateOre();
-					ores[i]->y = ScreenHeight + rand() % 600 + 50;
-					ores[i]->x = IRand(ScreenWidth - 50);
+					ores[i]->y = ScreenHeight + rand() % 600 + 50.0f;
+					ores[i]->x = Rand(ScreenWidth - 50);
+					ores[i]->oneHitFlag = false;
 					player.isMiningLeft = false;
 					player.isMiningRight = false;
 					ores[i]->isMined = false;
@@ -487,18 +545,73 @@ public:
 			if (ores[i]->y < -50) {
 				ores[i]->RegenerateOre();
 	
-				ores[i]->y = ScreenHeight + rand() % 600 + 50;
-				ores[i]->x = IRand(ScreenWidth - 50);
+				ores[i]->y = ScreenHeight + rand() % 600 + 50.0f;
+				ores[i]->x = Rand(ScreenWidth - 50) ;
 			}
 
 			//rendering the ore
 			//we move the ore to get the illusion of player movement. 
 			//The player is just moving on the x and everything else moves towards or away from the player.
-			ores[i]->RenderThis(screen, ores[i]->x, ores[i]->y);
-			ores[i]->y = (ores[i]->y) - GAMESPEED;
+			ores[i]->y = ores[i]->y - GAMESPEED * deltaTime/1000;
+			ores[i]->y = floorf(ores[i]->y);
+			ores[i]->RenderThis(screen, (int)ores[i]->x, (int)ores[i]->y);
 		}
 	}
 
+};
+
+class Environment {
+#define TREES 2
+public:
+	Entity* trees[TREES]{
+		new Entity(new Sprite(new Surface("assets/tree.png"), 1)),
+		new Entity(new Sprite(new Surface("assets/tree.png"), 1)),
+	};
+
+	void InitTreeGeneration()
+	{
+		for (int i = 0; i < TREES; i++) {
+			trees[i]->x = Rand(ScreenWidth);
+			trees[i]->y = ScreenHeight + rand() % 600 + 50.0f;
+			trees[i]->oneHitFlag = false;
+		}
+	}
+
+
+	void UpdateTrees(Surface* screen, Player& player,float deltaTime) {	
+		for (int i = 0; i < TREES; i++) {
+
+			//checking if player collided with a tree
+
+			if (player.check_collision(static_cast<Entity>(*trees[i])) && !trees[i]->oneHitFlag)
+			{
+				trees[i]->oneHitFlag = true;
+				//the player just hit an ore hp-- and all that stuff
+				//to be added
+				//do stuff
+				printf("PLAYER COLIDED!");
+				player.TakeDamage();
+				PlaySound("sounds/hurt.wav", NULL, SND_FILENAME | SND_ASYNC);
+				
+			}
+
+
+			//if the tree is outside the screen we give it another random position under the screen.
+			if (trees[i]->y < -50) {
+
+				trees[i]->y = ScreenHeight + rand() % 600 + 50 * deltaTime / 1000;
+				trees[i]->x = Rand(ScreenWidth - 50) ;
+				trees[i]->oneHitFlag = false;
+			}
+
+			//rendering the tree
+			//we move the ore to get the illusion of player movement. 
+			//The player is just moving on the x and everything else moves towards or away from the player.
+			trees[i]->RenderThis(screen, (int)trees[i]->x, (int)trees[i]->y);
+			trees[i]->y -= GAMESPEED * deltaTime/1000;
+			trees[i]->y = floorf (trees[i]->y);
+		}
+	}
 };
 
 }; // namespace Tmpl8
