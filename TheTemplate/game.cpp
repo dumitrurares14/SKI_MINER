@@ -31,8 +31,7 @@ namespace Tmpl8
 		env.InitTreeGeneration();
 		env.InitPickUps();
 		env.InitNpc();
-		std::cout << "started18!";
-
+		std::cout << "started19!";
 	}
 	
 	// -----------------------------------------------------------
@@ -40,7 +39,7 @@ namespace Tmpl8
 	// -----------------------------------------------------------
 	void Game::Shutdown()
 	{
-		
+		player.SaveScore();
 	}
 	// -----------------------------------------------------------
 	// Main application tick function
@@ -71,8 +70,11 @@ namespace Tmpl8
 			gameOverSprite.Draw(screen, (ScreenWidth / 2) - (gameOverSprite.GetWidth() / 2), (ScreenHeight / 2) - (gameOverSprite.GetHeight() / 2)-40);
 			restartSprite.Draw(screen, (ScreenWidth / 2) - (gameOverSprite.GetWidth() / 2), (ScreenHeight / 2) - (gameOverSprite.GetHeight() / 2)+160);
 
-			screen->Print("SCORE:", (ScreenWidth / 2) - 30, (ScreenHeight / 2) + 150, 0x4287f5);
-			player.ShowScore(screen, (ScreenWidth / 2) + 10, (ScreenHeight / 2) + 150, 0x4287f5);
+			screen->Print("SCORE:", (ScreenWidth / 2) - 100, (ScreenHeight / 2) + 150, 0x4287f5);
+			player.ShowScore(screen, (ScreenWidth / 2) - 60, (ScreenHeight / 2) + 150, 0x4287f5);
+
+			screen->Print("HIGH SCORE:", (ScreenWidth / 2) + 40, (ScreenHeight / 2) + 150, 0x4287f5);
+			player.ShowHighScore(screen, (ScreenWidth / 2) + 110, (ScreenHeight / 2) + 150, 0x4287f5);
 		}
 
 		if (pressFlag && keyPressed == 19 && isPaused == false && !player.gameOver) {

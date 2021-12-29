@@ -384,6 +384,39 @@ public:
 		screen->Print(cstr, posX, posY, color);
 	}
 
+	void ShowHighScore(Surface* screen, int posX, int posY, int color)
+	{
+		std::string str = std::to_string(GetHighScore());
+		char* cstr = &str[0];
+		screen->Print(cstr, posX, posY, color);
+	}
+
+	void SaveScore()
+	{
+		if (score > GetHighScore()) 
+		{
+			FILE* f = fopen("score.bin", "wb");
+			fwrite(&score, sizeof(score), 1, f);
+			fclose(f);
+		}
+	}
+	int GetHighScore()
+	{
+		FILE* f = fopen("score.bin", "rb");
+		int highScore=0;
+
+		if (f!=NULL) {
+			fread(&highScore, sizeof(highScore), 1, f);
+			fclose(f);
+		}
+		else {
+			FILE* g = fopen("score.bin", "wb");
+			fwrite(&highScore, sizeof(highScore), 1, g);
+			fclose(g);
+		}
+		return highScore;
+	}
+
 	void ShowHealth(Surface* screen) 
 	{
 		for (int k=20,i = 0; i < health; i++) {
@@ -397,6 +430,7 @@ public:
 		health--;
 		if (health <= 0) {
 			printf("\nGAME OVER!\n");
+			SaveScore();
 			gameOver = true;
 		}
 	}
