@@ -7,7 +7,6 @@
 #include <string>
 #include <Windows.h>
 
-
 namespace Tmpl8
 {
 	Snow snow;
@@ -18,8 +17,8 @@ namespace Tmpl8
 	Sprite pauseSprite(new Surface("assets/pause.png"), 1);
 	Sprite gameOverSprite(new Surface("assets/game_over.png"), 1);
 	Sprite restartSprite(new Surface("assets/restart_info.png"), 1);
-
-
+	Surface wow(200, 200);
+	
 	// -----------------------------------------------------------
 	// Initialize the application
 	// -----------------------------------------------------------
@@ -32,8 +31,8 @@ namespace Tmpl8
 		env.InitTreeGeneration();
 		env.InitPickUps();
 		env.InitNpc();
-		std::cout << "started17!";
-		
+		std::cout << "started18!";
+
 	}
 	
 	// -----------------------------------------------------------
@@ -49,10 +48,11 @@ namespace Tmpl8
 	void Game::Tick(float deltaTime)
 	{
 		bool pressFlag = KeyPressed(keyPressed);
+		screen->Clear(0x7393c7);
+		snow.UpdateSnowEffect(screen, 0xffffff, deltaTime);
+
 		if (!isPaused && !player.gameOver) {
-			screen->Clear(0x7393c7);
 			snow.UpdateGroundSnow((int)player.x + 10, (int)player.y, screen, 0xd6d6f5,deltaTime);
-			snow.UpdateSnowEffect(screen, 0xffffff,deltaTime);
 			player.SkiMovement(screen, 5, 200 , mousex, mousey, keyPressed,deltaTime);
 			oreGenerator.UpdateOres(screen, player, pressFlag && (keyPressed == 20 || keyPressed == 8), keyPressed,deltaTime);
 			env.UpdateTrees(screen, player,deltaTime);
@@ -62,15 +62,17 @@ namespace Tmpl8
 			player.ShowHealth(screen);
 		}
 		else if(isPaused) {
-			screen->Clear(0x7393c7);
-			snow.UpdateSnowEffect(screen, 0xffffff,deltaTime);
 			pauseSprite.Draw(screen, (ScreenWidth / 2) - (pauseSprite.GetWidth() / 2), (ScreenHeight / 2) - (pauseSprite.GetHeight() / 2));
+
+			screen->Print("SCORE:", (ScreenWidth/2)-30, (ScreenHeight/2)+100, 0x4287f5);
+			player.ShowScore(screen, (ScreenWidth / 2)+10, (ScreenHeight / 2)+100 , 0x4287f5);
 		}
 		else if (player.gameOver) {
-			screen->Clear(0x7393c7);
-			snow.UpdateSnowEffect(screen, 0xffffff,deltaTime);
 			gameOverSprite.Draw(screen, (ScreenWidth / 2) - (gameOverSprite.GetWidth() / 2), (ScreenHeight / 2) - (gameOverSprite.GetHeight() / 2)-40);
 			restartSprite.Draw(screen, (ScreenWidth / 2) - (gameOverSprite.GetWidth() / 2), (ScreenHeight / 2) - (gameOverSprite.GetHeight() / 2)+160);
+
+			screen->Print("SCORE:", (ScreenWidth / 2) - 30, (ScreenHeight / 2) + 150, 0x4287f5);
+			player.ShowScore(screen, (ScreenWidth / 2) + 10, (ScreenHeight / 2) + 150, 0x4287f5);
 		}
 
 		if (pressFlag && keyPressed == 19 && isPaused == false && !player.gameOver) {
@@ -89,6 +91,7 @@ namespace Tmpl8
 			oreGenerator.InitOreGeneration();
 			env.InitTreeGeneration();
 			env.InitPickUps();
+			env.InitNpc();
 		}
 	}
 

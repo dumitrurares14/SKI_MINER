@@ -377,6 +377,13 @@ public:
 		screen->Print(cstr,(int)(x+15),(int)(y-20), 0xebad05);
 	}
 
+	void ShowScore(Surface* screen,int posX,int posY, int color)
+	{
+		std::string str = std::to_string(score);
+		char* cstr = &str[0];
+		screen->Print(cstr, posX, posY, color);
+	}
+
 	void ShowHealth(Surface* screen) 
 	{
 		for (int k=20,i = 0; i < health; i++) {
