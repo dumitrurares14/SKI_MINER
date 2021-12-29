@@ -6,9 +6,9 @@
 #include <string>
 #include <Windows.h>
 
+static float GAMESPEED =80.0f;
 
 namespace Tmpl8 {
-#define GAMESPEED 80.0f
 class Surface;
 class Game
 {
@@ -26,11 +26,11 @@ public:
 	void KeyUp(int key) 
 	{
 		keyPressed = key;
-		isPressed = false;
+		isPressed = false;	
 	}
 
 	bool KeyPressed(int key) {
-		if (!isPressed) {
+		if (!isPressed && key==keyPressed) {
 			keyPressed = key;
 			isPressed = true;
 			return true;
@@ -39,6 +39,8 @@ public:
 			return false;
 		}
 	}
+
+
 	
 private:
 	Surface* screen;
@@ -77,10 +79,17 @@ public:
 		entitySprite->Draw(screen, x, y);
 	}
 
-
 	void RenderThis(Surface* screen)
 	{
 		entitySprite->Draw(screen, (int)x, (int)y);
+	}
+
+	float entityFrame = 0.0f;
+	void AnimateThis(float start, float finish, float animationSpeed, float deltaTime) 
+	{
+		entityFrame += animationSpeed * deltaTime / 1000;
+		if (entityFrame >= finish)entityFrame = start;
+		entitySprite->SetFrame((int)floorf(entityFrame));
 	}
 
 	bool check_collision(Entity A, Entity B)
@@ -365,7 +374,7 @@ public:
 	{
 		std::string str = std::to_string(score) ;
 		char* cstr = &str[0];
-		screen->Print(cstr,(int)(x+15),(int)(y-20), 0xb81a4c);
+		screen->Print(cstr,(int)(x+15),(int)(y-20), 0xebad05);
 	}
 
 	void ShowHealth(Surface* screen) 
@@ -387,8 +396,21 @@ public:
 
 	void PlayerReset() {
 		score = 0;
+		GAMESPEED = 80.0f;
 		health = 3;
 		y = 120;
+	}
+
+	int difficulty = 1;
+	void AddScore(int value) 
+	{
+		score += value;
+
+		if ((score > 100 && difficulty==1)||(score>350 && difficulty==2)||(score>650 && difficulty == 3)) {
+			GAMESPEED += 40;
+			difficulty++;
+			printf("score is now: %i and GAMESPEED is now: %f\n", score, GAMESPEED);
+		}
 	}
 };
 
@@ -511,7 +533,8 @@ public:
 			{
 				ores[i]->isMined = true;
 				player.isMiningLeft = true;
-				player.score += ores[i]->oreValue;
+				//player.score += ores[i]->oreValue;
+				player.AddScore(ores[i]->oreValue);
 
 				PlaySound("sounds/mine.wav", NULL, SND_FILENAME | SND_ASYNC);
 			}
@@ -520,7 +543,8 @@ public:
 			{
 				ores[i]->isMined = true;
 				player.isMiningRight = true;
-				player.score += ores[i]->oreValue;
+				//player.score += ores[i]->oreValue;
+				player.AddScore(ores[i]->oreValue);
 
 				PlaySound("sounds/mine.wav", NULL, SND_FILENAME | SND_ASYNC);
 			}
@@ -567,6 +591,9 @@ public:
 		new Entity(new Sprite(new Surface("assets/tree.png"), 1)),
 		new Entity(new Sprite(new Surface("assets/tree.png"), 1)),
 	};
+	Entity* healthUp = new Entity(new Sprite(new Surface("assets/heart_pickup.png"), 4));
+	
+	Entity* npc =  new Entity(new Sprite(new Surface("assets/npc.png"),8));
 
 	void InitTreeGeneration()
 	{
@@ -575,6 +602,93 @@ public:
 			trees[i]->y = ScreenHeight + rand() % 600 + 50.0f;
 			trees[i]->oneHitFlag = false;
 		}
+	}
+
+	void InitPickUps()
+	{
+		healthUp->x = Rand(ScreenWidth);
+		healthUp->y = ScreenHeight + rand() % 600 + 500.0f;
+		healthUp->oneHitFlag = false;
+		
+	}
+
+	void InitNpc() {
+		npc->x = 0;
+		npc->y = ScreenHeight + rand() % 600 + 1400;
+		npc->oneHitFlag = false;
+	}
+
+	int npcDir = 1.0f;
+	void UpdateNpc(Surface* screen, Player& player, float deltaTime) {
+
+
+		if (player.check_collision(static_cast<Entity>(*npc)) && !npc->oneHitFlag)
+		{
+			npc->oneHitFlag = true;
+			printf("PLAYER COLIDED!");
+			player.TakeDamage();
+			PlaySound("sounds/hurt.wav", NULL, SND_FILENAME | SND_ASYNC);
+
+		}
+
+		if (npc->y < -50) {
+			npc->y = ScreenHeight + rand() % 600 + 1400;
+			npc->x = Rand(ScreenWidth);
+			npc->oneHitFlag = false;
+
+			if (npc->x < ScreenHeight / 2) npcDir = 1;
+			else npcDir = -1;
+		}
+
+
+		if(abs(player.y-npc->y)<500.0f)
+			npc->x+= (GAMESPEED-10.0f) * npcDir *deltaTime/1000;
+
+		if(npcDir > 0)
+			npc->AnimateThis(0.0f, 4.0f, 6.0f, deltaTime);
+		else 
+			npc->AnimateThis(4.0f, 8.0f, 6.0f, deltaTime);
+
+		
+		npc->RenderThis(screen, (int)npc->x, (int)npc->y);
+		npc->y -= GAMESPEED * deltaTime / 1000;
+		npc->y = floorf(npc->y);
+	}
+
+	float healthFrame = 0.0f;
+	void UpdateHealthUp(Surface* screen, Player& player, float deltaTime)
+	{
+		if (player.check_collision(static_cast<Entity>(*healthUp)) && !healthUp->oneHitFlag)
+		{
+			healthUp->oneHitFlag = true;
+			if (player.health < 3) {
+				player.health++;
+				PlaySound("sounds/healthup.wav", NULL, SND_FILENAME | SND_ASYNC);
+				healthUp->y = ScreenHeight + rand() % 600 + 50 * deltaTime / 1000;
+				healthUp->x = Rand(ScreenWidth - 50);
+				healthUp->oneHitFlag = false;
+			}
+
+		}
+
+		if (healthUp->y < -50) {
+
+			healthUp->y = ScreenHeight + rand() % 600 + 500 * deltaTime / 1000;
+			healthUp->x = Rand(ScreenWidth - 50);
+			healthUp->oneHitFlag = false;
+		}
+
+		//rendering the tree
+		//we move the ore to get the illusion of player movement. 
+		//The player is just moving on the x and everything else moves towards or away from the player.
+		healthFrame += 3.0f * deltaTime / 1000;
+		if (healthFrame >= 4)healthFrame = 0.0f;
+		healthUp->entitySprite->SetFrame((int)floorf(healthFrame));
+
+		healthUp->RenderThis(screen, (int)healthUp->x, (int)healthUp->y);
+		healthUp->y -= GAMESPEED * deltaTime / 1000;
+		healthUp->y = floorf(healthUp->y);
+		
 	}
 
 
@@ -604,8 +718,8 @@ public:
 				trees[i]->oneHitFlag = false;
 			}
 
-			//rendering the tree
-			//we move the ore to get the illusion of player movement. 
+			//rendering the env objects
+			//we move the entity to get the illusion of player movement. 
 			//The player is just moving on the x and everything else moves towards or away from the player.
 			trees[i]->RenderThis(screen, (int)trees[i]->x, (int)trees[i]->y);
 			trees[i]->y -= GAMESPEED * deltaTime/1000;

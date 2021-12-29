@@ -8,7 +8,6 @@
 #include <Windows.h>
 
 
-#define SNOWDENSITY 200
 namespace Tmpl8
 {
 	Snow snow;
@@ -31,7 +30,9 @@ namespace Tmpl8
 		snow.CreateGroundSnow();
 		oreGenerator.InitOreGeneration();
 		env.InitTreeGeneration();
-		std::cout << "started14!";
+		env.InitPickUps();
+		env.InitNpc();
+		std::cout << "started17!";
 		
 	}
 	
@@ -42,20 +43,21 @@ namespace Tmpl8
 	{
 		
 	}
-
 	// -----------------------------------------------------------
 	// Main application tick function
 	// -----------------------------------------------------------
 	void Game::Tick(float deltaTime)
 	{
-		bool foo = KeyPressed(keyPressed);
+		bool pressFlag = KeyPressed(keyPressed);
 		if (!isPaused && !player.gameOver) {
 			screen->Clear(0x7393c7);
 			snow.UpdateGroundSnow((int)player.x + 10, (int)player.y, screen, 0xd6d6f5,deltaTime);
 			snow.UpdateSnowEffect(screen, 0xffffff,deltaTime);
 			player.SkiMovement(screen, 5, 200 , mousex, mousey, keyPressed,deltaTime);
-			oreGenerator.UpdateOres(screen, player, foo && (keyPressed == 20 || keyPressed == 8), keyPressed,deltaTime);
+			oreGenerator.UpdateOres(screen, player, pressFlag && (keyPressed == 20 || keyPressed == 8), keyPressed,deltaTime);
 			env.UpdateTrees(screen, player,deltaTime);
+			env.UpdateHealthUp(screen, player, deltaTime);
+			env.UpdateNpc(screen, player, deltaTime);
 			player.ShowScore(screen);
 			player.ShowHealth(screen);
 		}
@@ -71,21 +73,22 @@ namespace Tmpl8
 			restartSprite.Draw(screen, (ScreenWidth / 2) - (gameOverSprite.GetWidth() / 2), (ScreenHeight / 2) - (gameOverSprite.GetHeight() / 2)+160);
 		}
 
-		if (foo && keyPressed == 19 && isPaused == false && !player.gameOver) {
+		if (pressFlag && keyPressed == 19 && isPaused == false && !player.gameOver) {
 			isPaused = true;
 			PlaySound(NULL, NULL, SND_ASYNC);
 		}
-		else if (foo && keyPressed == 19 && isPaused == true && !player.gameOver) {
+		else if (pressFlag && keyPressed == 19 && isPaused == true && !player.gameOver) {
 			isPaused = false;
 		}
 
-		if (foo && keyPressed == 40 && player.gameOver) {
+		if (pressFlag && keyPressed == 40 && player.gameOver) {
 			player.gameOver = false;
 			player.PlayerReset();
 			snow.CreateSnowEffect();
 			snow.CreateGroundSnow();
 			oreGenerator.InitOreGeneration();
 			env.InitTreeGeneration();
+			env.InitPickUps();
 		}
 	}
 

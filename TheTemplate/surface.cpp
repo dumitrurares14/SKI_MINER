@@ -189,38 +189,6 @@ void Surface::Plot( int x, int y, Pixel c )
 	if ((x >= 0) && (y >= 0) && (x < m_Width) && (y < m_Height)) m_Buffer[x + y * m_Pitch] = c;
 }
 
-
-
-void Surface::PlotFloat(float x, float y, Pixel c)
-{
-	float xW = floor(x);
-	float yW = floor(y);
-
-	float x2 = x - xW;
-	float y2 = y - yW;
-	float x1 = 1.0f - x2;
-	float y1 = 1.0f - y2;
-
-	float p1 = x1 / y1;
-	float p2 = x2 / y1;
-	float p3 = x1 / y1;
-	float p4 = x2 / y2;
-
-	float blue = (c >> 16) & 0xFF;
-	float green = (c >> 8) & 0xFF;
-	float red = c & 0xFF;
-
-	uint c1 = (int(blue * p1) << 16) + (int(green * p1) << 8) + (int)red * p1;
-	uint c2 = (int(blue * p2) << 16) + (int(green * p2) << 8) + (int)red * p2;
-	uint c3 = (int(blue * p3) << 16) + (int(green * p3) << 8) + (int)red * p3;
-	uint c4 = (int(blue * p4) << 16) + (int(green * p4) << 8) + (int)red * p4;
-
-	if ((x >= 0) && (y >= 0) && (x < m_Width) && (y < m_Height)) m_Buffer[(int)x + (int)y * m_Pitch] = c1;
-	if ((x >= 0) && (y >= 0) && (x+1 < m_Width) && (y < m_Height)) m_Buffer[(int)(x+1) + (int)y * m_Pitch] = c2;
-	if ((x >= 0) && (y >= 0) && (x < m_Width) && (y+1 < m_Height)) m_Buffer[(int)x + (int)(y+1) * m_Pitch] = c3;
-	if ((x >= 0) && (y >= 0) && (x+1 < m_Width) && (y+1 < m_Height)) m_Buffer[(int)(x+1) + (int)(y+1) * m_Pitch] = c4;
-
-}
 void Surface::Box( int x1, int y1, int x2, int y2, Pixel c )
 {
 	Line( (float)x1, (float)y1, (float)x2, (float)y1, c );
