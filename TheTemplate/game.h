@@ -199,7 +199,7 @@ public:
 
 class Snow : public Entity{
 #define maxP 200000 //amount of snow ground particles
-#define SNOWDENSITY 200 // amount of snow particles on screen
+#define SNOWDENSITY 250 // amount of snow particles on screen
 #define SNOWFORCE 45.0f // force multiplier for moving ground snow
 public:
 	//ground snow positions
@@ -549,8 +549,7 @@ public:
 				player.TakeDamage();
 				PlaySound("sounds/hurt.wav", NULL, SND_FILENAME | SND_ASYNC);
 			}
-			
-
+			//check if left pick hitbox is colliding with an ore and the player pressed "Q"
 			if( (player.leftPick.CheckCollision(static_cast<Entity>(*ores[i])) && isMining==1 && key==20))
 			{
 				//Mine left, add score, play sound
@@ -559,7 +558,7 @@ public:
 				player.AddScore(ores[i]->oreValue);
 				PlaySound("sounds/mine.wav", NULL, SND_FILENAME | SND_ASYNC);
 			}
-
+			//check if right pick hitbox is colliding with an ore and the player pressed "E"
 			if (player.rightPick.CheckCollision(static_cast<Entity>(*ores[i])) && isMining == 1 && key == 8)
 			{
 				//Mine right, add score, play sound
@@ -568,7 +567,6 @@ public:
 				player.AddScore(ores[i]->oreValue);
 				PlaySound("sounds/mine.wav", NULL, SND_FILENAME | SND_ASYNC);
 			}
-
 			//if the ore is mined regenerate it
 			if (ores[i]->isMined == true) {
 				float dist = abs(player.y - ores[i]->y);
@@ -582,15 +580,13 @@ public:
 					ores[i]->isMined = false;
 				}
 			}
-
 			//if the ore is outside the screen we "regenerate the ore" and gives it another random position under the screen.
+			//RegenerateOre() --> another random type of ore (coal,gold,diamond,gem)
 			if (ores[i]->y < -50) {
 				ores[i]->RegenerateOre();
-	
 				ores[i]->y = ScreenHeight + rand() % 600 + 50.0f;
 				ores[i]->x = Rand(ScreenWidth - 50) ;
 			}
-
 			//rendering the ore
 			//we move the ore to get the illusion of player movement. 
 			//The player is just moving on the x and everything else moves towards or away from the player.

@@ -21,7 +21,7 @@ namespace Tmpl8
 	// -----------------------------------------------------------
 	void Game::Init()
 	{
-		printf("STARTED 20!\n");
+		printf("STARTED 1.0.0\n");
 		snow.CreateSnowEffect();
 		snow.CreateGroundSnow();
 		oreGenerator.InitOreGeneration();
@@ -43,13 +43,11 @@ namespace Tmpl8
 	{
 		bool pressFlag = KeyPressed(keyPressed);
 		screen->Clear(0x7393c7);
-		snow.UpdateSnowEffect(screen, 0xffffff, deltaTime);//Snow weather effect at all time
-
 		if (!isPaused && !player.gameOver) {
 			//Game loop when not paused or game over
 			//Updating ground snow, player, ores, env, generators
 			//showing UI
-			snow.UpdateGroundSnow((int)player.x + 10, (int)player.y, screen, 0xd6d6f5,deltaTime);
+			snow.UpdateGroundSnow((int)player.x + 10, (int)player.y, screen, 0xc7cfd6,deltaTime);
 			player.SkiMovement(screen, 5, 200 , mousex, mousey, keyPressed,deltaTime);
 			oreGenerator.UpdateOres(screen, player, pressFlag && (keyPressed == 20 || keyPressed == 8), keyPressed,deltaTime);
 			env.UpdateTrees(screen, player,deltaTime);
@@ -58,7 +56,6 @@ namespace Tmpl8
 			//UI
 			player.ShowScore(screen);
 			player.ShowHealth(screen);
-
 			//PAUSE INPUT
 			if (pressFlag && keyPressed == 19) {
 				isPaused = true;
@@ -69,8 +66,8 @@ namespace Tmpl8
 			//Drawing pause menu with pause sprite and showing score
 			pauseSprite.Draw(screen, (ScreenWidth / 2) - (pauseSprite.GetWidth() / 2), (ScreenHeight / 2) - (pauseSprite.GetHeight() / 2));
 
-			screen->Print("SCORE:", (ScreenWidth/2)-30, (ScreenHeight/2)+100, 0x4287f5);
-			player.ShowScore(screen, (ScreenWidth / 2)+10, (ScreenHeight / 2)+100 , 0x4287f5);
+			screen->Print("SCORE:", (ScreenWidth/2)-30, (ScreenHeight/2)+100, 0x326194);
+			player.ShowScore(screen, (ScreenWidth / 2)+10, (ScreenHeight / 2)+100 , 0x326194);
 
 			//UNPAUSE INPUT
 			if (pressFlag && keyPressed == 19 && !player.gameOver) {
@@ -83,11 +80,11 @@ namespace Tmpl8
 			gameOverSprite.Draw(screen, (ScreenWidth / 2) - (gameOverSprite.GetWidth() / 2), (ScreenHeight / 2) - (gameOverSprite.GetHeight() / 2)-40);
 			restartSprite.Draw(screen, (ScreenWidth / 2) - (gameOverSprite.GetWidth() / 2), (ScreenHeight / 2) - (gameOverSprite.GetHeight() / 2)+160);
 
-			screen->Print("SCORE:", (ScreenWidth / 2) - 100, (ScreenHeight / 2) + 150, 0x4287f5);
-			player.ShowScore(screen, (ScreenWidth / 2) - 60, (ScreenHeight / 2) + 150, 0x4287f5);
+			screen->Print("SCORE:", (ScreenWidth / 2) - 100, (ScreenHeight / 2) + 150, 0x326194);
+			player.ShowScore(screen, (ScreenWidth / 2) - 60, (ScreenHeight / 2) + 150, 0x326194);
 
-			screen->Print("HIGH SCORE:", (ScreenWidth / 2) + 40, (ScreenHeight / 2) + 150, 0x4287f5);
-			player.ShowHighScore(screen, (ScreenWidth / 2) + 110, (ScreenHeight / 2) + 150, 0x4287f5);
+			screen->Print("HIGH SCORE:", (ScreenWidth / 2) + 40, (ScreenHeight / 2) + 150, 0x326194);
+			player.ShowHighScore(screen, (ScreenWidth / 2) + 110, (ScreenHeight / 2) + 150, 0x326194);
 
 			//RESTART INPUT
 			//If enter is pressed restart everything
@@ -102,5 +99,6 @@ namespace Tmpl8
 				env.InitNpc();
 			}
 		}
+		snow.UpdateSnowEffect(screen, 0xffffff, deltaTime);//Snow weather effect at all time
 	}
 };
