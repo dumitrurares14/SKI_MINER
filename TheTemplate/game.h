@@ -6,7 +6,7 @@
 #include <string>
 #include <Windows.h>
 
-static float GAMESPEED =80.0f;
+static float GAMESPEED =8.0f;
 
 namespace Tmpl8 {
 class Surface;
@@ -86,7 +86,7 @@ public:
 	float entityFrame = 0.0f;
 	void AnimateThis(float start, float finish, float animationSpeed, float deltaTime) 
 	{
-		entityFrame += animationSpeed * deltaTime / 1000;
+		entityFrame += animationSpeed * deltaTime;
 		if (entityFrame >= finish)entityFrame = start;
 		entitySprite->SetFrame((int)floorf(entityFrame));
 	}
@@ -200,7 +200,7 @@ public:
 class Snow : public Entity{
 #define maxP 200000 //amount of snow ground particles
 #define SNOWDENSITY 250 // amount of snow particles on screen
-#define SNOWFORCE 45.0f // force multiplier for moving ground snow
+#define SNOWFORCE 35.0f // force multiplier for moving ground snow
 public:
 	//ground snow positions
 	float groundSnowX[maxP] = { 0.0f};
@@ -228,26 +228,24 @@ public:
 				groundSnowY[i] = groundSnowY[i] + ScreenHeight;
 				groundSnowX[i] = Rand(ScreenWidth) ;
 			}
-			groundSnowY[i] = groundSnowY[i] - GAMESPEED * deltaTime/1000;
-			groundSnowY[i] = floorf(groundSnowY[i]);
 
-
+			groundSnowY[i] -= GAMESPEED * deltaTime;
 			//leaving trail behind you(for each ski) by moving the snow away from you
 
 			//ski 1
 			float dx = groundSnowX[i] - objX-20, dy = groundSnowY[i] - objY-10;
 			float dist = sqrtf(dx * dx + dy * dy);
 			if (dist < 10)
-				groundSnowX[i] += dx / dist * SNOWFORCE * deltaTime/1000 , groundSnowY[i] += dy / dist * SNOWFORCE *deltaTime / 1000;
+				groundSnowX[i] += dx / dist * SNOWFORCE * deltaTime , groundSnowY[i] += dy / dist * SNOWFORCE *deltaTime;
 
 			//ski 2
 			float dx2 = groundSnowX[i] - objX -5, dy2 = groundSnowY[i] - objY - 10;
 			float dist2 = sqrtf(dx2 * dx2 + dy2 * dy2);
 			if (dist2 < 10)
-				groundSnowX[i] += dx2 / dist2 * SNOWFORCE * deltaTime / 1000, groundSnowY[i] += dy2 / dist2 * SNOWFORCE * deltaTime / 1000;
+				groundSnowX[i] += dx2 / dist2 * SNOWFORCE * deltaTime, groundSnowY[i] += dy2 / dist2 * SNOWFORCE * deltaTime;
 			
 			//drawing the ground snowflake 
-			screen->Plot((int)groundSnowX[i], (int)groundSnowY[i], color);
+			screen->Plot((int)(groundSnowX[i] + FLT_EPSILON), (int)(groundSnowY[i] + FLT_EPSILON), color);
 		}
 	}
 
@@ -273,19 +271,19 @@ public:
 			}
 
 			//calculating different fall speed for each snowflakes "layer" to achieve a random and natural effect
-			effectSnowX[i]+= 100 * deltaTime/1000;
+			effectSnowX[i]+= 0.1f * deltaTime;
 			if (i % 10 >= 0 && i % 10 <= 3) {
 				//effectSnowY[i] = effectSnowY[i] + 1 * deltaTime/1000;
-				effectSnowY[i] += 100 * deltaTime / 1000;
+				effectSnowY[i] += 0.1f * deltaTime;
 			}
 			else if (i % 10 >= 5 && i % 10 <= 9) {
 				//effectSnowY[i] = effectSnowY[i] + 2 *deltaTime / 1000;
-				effectSnowY[i] += 200 * deltaTime / 1000;
+				effectSnowY[i] += 0.2f * deltaTime;
 			}
 			else
 			{
 				//effectSnowY[i] = effectSnowY[i] + 3  *deltaTime / 1000;
-				effectSnowY[i] += 300* deltaTime / 1000;
+				effectSnowY[i] += 0.3f * deltaTime;
 			}
 
 			//Drawing the snowflake in an "X" shape
@@ -344,12 +342,12 @@ public:
 
 		if (abs(x - objX) > dist || abs(y - objY > dist)) {
 			if (x - objX < 0) {
-				x += 1 * speed *deltaTime / 1000;
+				x += 1 * speed *deltaTime;
 				if (!isMining)
 				playerSprite->SetFrame(2);
 			}
 			else if (x - objX > 0) {
-				x -= 1 * speed*deltaTime / 1000;
+				x -= 1 * speed*deltaTime;
 				if (!isMining)
 				playerSprite->SetFrame(1);
 			}
@@ -544,7 +542,6 @@ public:
 			if (player.CheckCollision(static_cast<Entity>(*ores[i])) && !ores[i]->oneHitFlag)
 			{
 				//the player just hit an ore health-- and playing the hurt sound
-				//printf("PLAYER COLIDED!");
 				ores[i]->oneHitFlag = true;
 				player.TakeDamage();
 				PlaySound("sounds/hurt.wav", NULL, SND_FILENAME | SND_ASYNC);
@@ -590,9 +587,8 @@ public:
 			//rendering the ore
 			//we move the ore to get the illusion of player movement. 
 			//The player is just moving on the x and everything else moves towards or away from the player.
-			ores[i]->y = ores[i]->y - GAMESPEED * deltaTime/1000;
-			ores[i]->y = floorf(ores[i]->y);
-			ores[i]->RenderThis(screen, (int)ores[i]->x, (int)ores[i]->y);
+			ores[i]->y = ores[i]->y - GAMESPEED * deltaTime;
+			ores[i]->RenderThis(screen, (int)(ores[i]->x), (int)(ores[i]->y));
 		}
 	}
 };
@@ -651,7 +647,7 @@ public:
 
 		//move him left or right when the player is close enough
 		if(abs(player.y-npc->y)<500.0f)
-			npc->x+= (GAMESPEED-10.0f) * npcDir *deltaTime/1000;
+			npc->x+= (GAMESPEED-10.0f) * npcDir *deltaTime;
 
 		//animate him according to direction
 		if(npcDir > 0)
@@ -661,8 +657,7 @@ public:
 
 		//rendering the npc
 		npc->RenderThis(screen, (int)npc->x, (int)npc->y);
-		npc->y -= GAMESPEED * deltaTime / 1000;
-		npc->y = floorf(npc->y);
+		npc->y -= GAMESPEED * deltaTime;
 	}
 
 
@@ -675,7 +670,7 @@ public:
 				//player hp up if health is less than max
 				player.health++;
 				PlaySound("sounds/healthup.wav", NULL, SND_FILENAME | SND_ASYNC);
-				healthUp->y = ScreenHeight + rand() % 600 + 50 * deltaTime / 1000;
+				healthUp->y = ScreenHeight + rand() % 600 + 50 * deltaTime;
 				healthUp->x = Rand(ScreenWidth - 50);
 				healthUp->oneHitFlag = false;
 			}
@@ -684,7 +679,7 @@ public:
 
 		//if hp up is outside the screen we give it another random position under the screen
 		if (healthUp->y < -50) {
-			healthUp->y = ScreenHeight + rand() % 600 + 500 * deltaTime / 1000;
+			healthUp->y = ScreenHeight + rand() % 600 + 500 * deltaTime;
 			healthUp->x = Rand(ScreenWidth - 50);
 			healthUp->oneHitFlag = false;
 		}
@@ -694,8 +689,7 @@ public:
 		//The player is just moving on the x and everything else moves towards or away from the player.
 		healthUp->RenderThis(screen, (int)healthUp->x, (int)healthUp->y);
 		healthUp->AnimateThis(0.0f,4.0f,3,deltaTime);
-		healthUp->y -= GAMESPEED * deltaTime / 1000;
-		healthUp->y = floorf(healthUp->y);
+		healthUp->y -= GAMESPEED * deltaTime;
 	}
 
 
@@ -718,7 +712,7 @@ public:
 			//if the tree is outside the screen we give it another random position under the screen.
 			if (trees[i]->y < -50) {
 
-				trees[i]->y = ScreenHeight + rand() % 600 + 50 * deltaTime / 1000;
+				trees[i]->y = ScreenHeight + rand() % 600 + 50 * deltaTime;
 				trees[i]->x = Rand(ScreenWidth - 50) ;
 				trees[i]->oneHitFlag = false;
 			}
@@ -727,8 +721,7 @@ public:
 			//we move the entity to get the illusion of player movement. 
 			//The player is just moving on the x and everything else moves towards or away from the player.
 			trees[i]->RenderThis(screen, (int)trees[i]->x, (int)trees[i]->y);
-			trees[i]->y -= GAMESPEED * deltaTime/1000;
-			trees[i]->y = floorf (trees[i]->y);
+			trees[i]->y -= GAMESPEED * deltaTime;
 		}
 	}
 

@@ -21,7 +21,9 @@ namespace Tmpl8
 	// -----------------------------------------------------------
 	void Game::Init()
 	{
+		GAMESPEED = 80.0f;
 		printf("STARTED 1.0.0\n");
+		printf("Gamespeed:%f\n", GAMESPEED);
 		snow.CreateSnowEffect();
 		snow.CreateGroundSnow();
 		oreGenerator.InitOreGeneration();
@@ -42,17 +44,18 @@ namespace Tmpl8
 	void Game::Tick(float deltaTime)
 	{
 		bool pressFlag = KeyPressed(keyPressed);
+		float dt = deltaTime / 1000;
 		screen->Clear(0x7393c7);
 		if (!isPaused && !player.gameOver) {
 			//Game loop when not paused or game over
 			//Updating ground snow, player, ores, env, generators
 			//showing UI
-			snow.UpdateGroundSnow((int)player.x + 10, (int)player.y, screen, 0xc7cfd6,deltaTime);
-			player.SkiMovement(screen, 5, 200 , mousex, mousey, keyPressed,deltaTime);
-			oreGenerator.UpdateOres(screen, player, pressFlag && (keyPressed == 20 || keyPressed == 8), keyPressed,deltaTime);
-			env.UpdateTrees(screen, player,deltaTime);
-			env.UpdateHealthUp(screen, player, deltaTime);
-			env.UpdateNpc(screen, player, deltaTime);
+			snow.UpdateGroundSnow((int)player.x + 10, (int)player.y, screen, 0xc7cfd6,dt);
+			player.SkiMovement(screen, 5, 200 , mousex, mousey, keyPressed, dt);
+			oreGenerator.UpdateOres(screen, player, pressFlag && (keyPressed == 20 || keyPressed == 8), keyPressed, dt);
+			env.UpdateTrees(screen, player, dt);
+			env.UpdateHealthUp(screen, player, dt);
+			env.UpdateNpc(screen, player, dt);
 			//UI
 			player.ShowScore(screen);
 			player.ShowHealth(screen);
